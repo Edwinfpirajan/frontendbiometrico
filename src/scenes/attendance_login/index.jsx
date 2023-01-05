@@ -1,5 +1,5 @@
 import { preventDefault } from '@fullcalendar/core';
-import logoDistri from '../../img/logos/logo.png'   
+import logoDistri from '../../img/logos/logo.png'
 import Swal from 'sweetalert2'
 import React, { useRef, useState } from 'react';
 import Webcam from 'react-webcam';
@@ -39,7 +39,7 @@ const Formulario = () => {
 
         takePhoto()
 
-        if (pinEmploye === '' || state === '') {
+        if (pinEmploye === '') {
             Swal.fire({
                 icon: 'error',
                 title: 'Oops...',
@@ -97,14 +97,14 @@ const Formulario = () => {
                             <div className="wrapper">
                                 <input
                                     className='state'
-                                    id='Hora llegada'
+                                    id='arrival'
                                     type="radio"
-                                    name="state"
-                                    value="Hora llegada"
-                                    checked={state === 'Hora llegada'}
+                                    name="arrival"
+                                    value="arrival"
+                                    checked={state === 'arrival'}
                                     onChange={event => setState(event.target.value)}
                                 />
-                                <label className="label" htmlFor="Hora llegada">
+                                <label className="label" htmlFor="arrival">
                                     <div className="indicator"></div>
                                     <span className="text"> Hora llegada</span>
                                 </label>
@@ -112,14 +112,14 @@ const Formulario = () => {
                             <div className="wrapper">
                                 <input
                                     className='state'
-                                    id='Salida almuerzo'
+                                    id='breakIn'
                                     type="radio"
-                                    name="state"
-                                    value="Salida almuerzo"
-                                    checked={state === 'Salida almuerzo'}
+                                    name="breakIn"
+                                    value="breakIn"
+                                    checked={state === 'breakIn'}
                                     onChange={event => setState(event.target.value)}
                                 />
-                                <label className="label" htmlFor="Salida almuerzo">
+                                <label className="label" htmlFor="breakIn">
                                     <div className="indicator"></div>
                                     <span className="text"> Salida almuerzo</span>
                                 </label>
@@ -127,14 +127,14 @@ const Formulario = () => {
                             <div className="wrapper">
                                 <input
                                     className="state"
-                                    id='Entrada almuerzo'
+                                    id='breakOut'
                                     type="radio"
-                                    name="state"
-                                    value="Entrada almuerzo"
-                                    checked={state === 'Entrada almuerzo'}
+                                    name="breakOut"
+                                    value="breakOut"
+                                    checked={state === 'breakOut'}
                                     onChange={event => setState(event.target.value)}
                                 />
-                                <label className="label" htmlFor="Entrada almuerzo">
+                                <label className="label" htmlFor="breakOut">
                                     <div className="indicator"></div>
                                     <span className="text"> Entrada almuerzo</span>
                                 </label>
@@ -145,14 +145,14 @@ const Formulario = () => {
                             <div className="wrapper">
                                 <input
                                     className="state"
-                                    id='Hora de salida'
+                                    id='departure'
                                     type="radio"
-                                    name="state"
-                                    value="Hora de salida"
-                                    checked={state === 'Hora de salida'}
+                                    name="departure"
+                                    value="departure"
+                                    checked={state === 'departure'}
                                     onChange={event => setState(event.target.value)}
                                 />
-                                <label className="label" htmlFor="Hora de salida">
+                                <label className="label" htmlFor="departure">
                                     <div className="indicator"></div>
                                     <span className="text"> Hora salida</span>
                                 </label>

@@ -66,6 +66,11 @@ const Team = () => {
 
   ];
 
+  const horary =[
+    { label: '8:00 - 12:00', value: '8:00 - 12:00' },
+
+  ]
+
   const columns = [
     { field: "id", headerName: "ID", flex: 0.5 },
     {
@@ -97,6 +102,11 @@ const Team = () => {
       flex: 1,
     },
     {
+      field: "horary",
+      headerName: "Horario",
+      flex: 1,
+    },
+    {
       field: "fechacreacion",
       headerName: "Creado",
       flex: 1,
@@ -117,7 +127,8 @@ const Team = () => {
         title: 'Es necesario llenar todos los campos',
         showConfirmButton: false,
         timer: 1500
-      })
+      })                                                      
+      return        
   } else {
       Swal.fire({
           position: 'top-end',
@@ -235,6 +246,9 @@ const Team = () => {
               </div>
               <div className="field col">
                 <Dropdown name="cargo" value={employe?.position} options={nPosition} onChange={({ target }) => setEmploye({ ...employe, ['position']: target.value })} placeholder="Selecciona un cargo" style={{ width: "400px" }} />
+              </div>
+              <div className="field col">
+                <Dropdown name="cargo" value={employe?.horary} options={horary} onChange={({ target }) => setEmploye({ ...employe, ['horary']: target.value })} placeholder="Selecciona el horario" style={{ width: "400px" }} />
               </div>
             </div>
           </form>
