@@ -67,9 +67,10 @@ const Team = () => {
   ];
 
   const horary =[
-    { label: '8:00 - 12:00', value: '8:00 - 12:00' },
+    { label: '8:00 - 12:00', value: 49 },
 
   ]
+
 
   const columns = [
     { field: "id", headerName: "ID", flex: 0.5 },
@@ -102,7 +103,12 @@ const Team = () => {
       flex: 1,
     },
     {
-      field: "horary",
+      field: "arrival",
+      headerName: "Horario",
+      flex: 1,
+    },
+    {
+      field: "departure",
       headerName: "Horario",
       flex: 1,
     },
@@ -119,7 +125,7 @@ const Team = () => {
   
   const save = () => {
 
-    if (employe?.first_name === '' || employe?.last_name === '' || employe?.company === '' || employe?.position === '') {
+    if (employe?.first_name === '' || employe?.last_name === '' || employe?.company === '' || employe?.position === '' || employe?.schedule_id === '') {
       console.log("Se cumple la condición positiva");
       Swal.fire({
         position: 'top-end',
@@ -248,8 +254,8 @@ const Team = () => {
                 <Dropdown name="cargo" value={employe?.position} options={nPosition} onChange={({ target }) => setEmploye({ ...employe, ['position']: target.value })} placeholder="Selecciona un cargo" style={{ width: "400px" }} />
               </div>
               <div className="field col">
-                <Dropdown name="cargo" value={employe?.horary} options={horary} onChange={({ target }) => setEmploye({ ...employe, ['horary']: target.value })} placeholder="Selecciona el horario" style={{ width: "400px" }} />
-              </div>
+                <Dropdown name="horario" value={employe?.schedule_id} options={horary} onChange={({ target }) => setEmploye({ ...employe, ['schedule_id']: target.value })} placeholder="Selecciona un horario" style={{ width: "400px" }} />
+              </div>             
             </div>
           </form>
 

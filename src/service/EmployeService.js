@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export class EmployeService {
+class EmployeService {
     baseUrl = "http://localhost:3001/api/";
 
     async getAll() {
@@ -21,6 +21,7 @@ export class EmployeService {
 
     async delete(id) {
         const res = await axios.post(this.baseUrl + "delete/" + id, null);
+        console.log(res.data);
         return res.data;
     }
 
