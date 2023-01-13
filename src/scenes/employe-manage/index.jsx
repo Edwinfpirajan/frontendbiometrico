@@ -14,8 +14,11 @@ import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
 import Swal from 'sweetalert2'
+import './custom.css'
 
 import '/node_modules/primeflex/primeflex.css'
+import { Toolbar } from "primereact/toolbar";
+import { width } from "@mui/system";
 
 const Team = () => {
 
@@ -30,6 +33,7 @@ const Team = () => {
     employeService.getAll().then(res => setEmployes(res));
   }, [!saveSucces])
 
+ 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
@@ -50,6 +54,11 @@ const Team = () => {
       label: 'Eliminar',
       icon: PrimeIcons.TRASH,
       command: () => { deleteEmpleado(employe?.id) }
+    },
+    {
+      label:'exportar excel',
+      icon: PrimeIcons.FILE_EXCEL,
+      command: ()=> {exportExcel()}
     }
   ]
 
@@ -67,13 +76,11 @@ const Team = () => {
   ];
 
   const horary =[
-    { label: '8:00 - 12:00', value: 49 },
-
+    { label: '8:00 - 12:00', value: 13 },
   ]
 
 
   const columns = [
-    { field: "id", headerName: "ID", flex: 0.5 },
     {
       field: "pinEmploye",
       headerName: "PIN",
@@ -125,14 +132,16 @@ const Team = () => {
   
   const save = () => {
 
-    if (employe?.first_name === '' || employe?.last_name === '' || employe?.company === '' || employe?.position === '' || employe?.schedule_id === '') {
-      console.log("Se cumple la condición positiva");
+    if (!employe?.first_name || !employe?.last_name  || !employe?.company  || !employe?.position  || !employe?.schedule_id ) {
       Swal.fire({
-        position: 'top-end',
+        position: 'center',
         icon: 'error',
         title: 'Es necesario llenar todos los campos',
         showConfirmButton: false,
-        timer: 1500
+        timer: 1500,
+        customClass: {
+          container: 'my-container-class'
+        }
       })                                                      
       return        
   } else {
@@ -166,6 +175,7 @@ const Team = () => {
     );
   }
 
+  console.log(employes)
   // EDITAR USUARIOS 
 
   const showSaveModal = () => {
@@ -187,14 +197,44 @@ const Team = () => {
     employeService.delete(id).then(() => employeService.getAll().then(res => setEmployes(res)))
   }
 
+  const exportExcel = () => {
+    import('xlsx').then(xlsx => {
+        const worksheet = xlsx.utils.json_to_sheet(employes);
+        const workbook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
+        const excelBuffer = xlsx.write(workbook, { bookType: 'xlsx', type: 'array' });
+        saveAsExcelFile(excelBuffer, 'employes');
+    });
+}
+
+const saveAsExcelFile = (buffer, fileName) => {
+  import('file-saver').then(module => {
+      if (module && module.default) {
+          let EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+          let EXCEL_EXTENSION = '.xlsx';
+          const data = new Blob([buffer], {
+              type: EXCEL_TYPE
+          });
+
+          module.default.saveAs(data, fileName + '_export_' + new Date().getTime() + EXCEL_EXTENSION);
+      }
+  });
+}
+
+const exportBtn = () => {
+  return (
+    <Button type="button" label="Exportar Registros" icon="pi pi-download" onClick={exportExcel} className="p-button-success mr-2" data-pr-tooltip="XLS" />
+  )
+}
+
   return (
     <Box m="20px">
       <Header title="EMPLEADOS" subtitle="Administración de empleados" />
+      
       <Menubar model={items}  style={{
                                        justifyContent: "center",  
                                        background: "none", 
                                        /* border: "none", */
-                                       width: "500px" }} />
+                                       width: "600px" }} />
       <Box
         m="40px 0 0 0"
         height="75vh"
@@ -229,7 +269,20 @@ const Team = () => {
       >
         <DataGrid rows={employes} /* checkboxSelection */
           selection={selectedEmpleado} onSelectionModelChange={e => getInfo(e)}
-          dataKey="id" columns={columns} components={{ Toolbar: GridToolbar }}/>
+          dataKey="id" columns={columns} localeText={{
+            noRowsLabel: "No se ha encontrado datos.",
+            noResultsOverlayLabel: "No se ha encontrado ningún resultado",
+            toolbarColumns: "Columnas",
+            toolbarColumnsLabel: "Seleccionar columnas",
+            toolbarFilters: "Filtros",
+            toolbarExport: "Exportar",
+            collapseDetailPanel:"test",
+            toolbarExport: 'Exportar',
+  toolbarExportLabel: 'Exportar',
+  toolbarExportCSV: 'Descargar como CSV',
+  toolbarExportPrint: 'Imprimir',
+  toolbarExportExcel: 'Descargar como Excel',
+        }}components={{ Toolbar: GridToolbar}}/>
         <Dialog header="Empleados" visible={showModal} style={{ width: '50vw' }} footer={renderFooter()} onHide={() => setShowModal(false)} selectedEmpleado>
           <form id="empleado-form">
             <div className="formgrid grid">

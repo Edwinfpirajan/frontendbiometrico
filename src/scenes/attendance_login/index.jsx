@@ -48,7 +48,7 @@ const Formulario = () => {
             return;
         } else {
             Swal.fire({
-                position: 'top-end',
+                position: 'center',
                 icon: 'success',
                 title: 'Registro exitoso',
                 showConfirmButton: false,

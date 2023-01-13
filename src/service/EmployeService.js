@@ -16,6 +16,7 @@ class EmployeService {
 
     async getInfo(id) {
         const res = await axios.get(this.baseUrl + `find/${id}`);
+        
         return res.data;
     }
 

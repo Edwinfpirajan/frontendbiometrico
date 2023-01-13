@@ -23,6 +23,7 @@ class AttendanceService {
 
     async getAllAttendance(){
         const res = await axios.get(this.baseUrl + "attendance");
+        // console.log(res.data)
         return res.data;
     }
 

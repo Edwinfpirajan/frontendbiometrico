@@ -162,6 +162,7 @@ export const themeSettings = (mode) => {
             },
           }),
     },
+    direction: 'es',
     typography: {
       fontFamily: ["Source Sans Pro", "sans-serif"].join(","),
       fontSize: 12,
