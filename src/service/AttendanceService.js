@@ -1,19 +1,3 @@
-// import axios from 'axios';
-
-// axios.defaults.debug = true;
-
-// class AttendanceService {
-//     baseUrl = "http://localhost:3001/api/";
-
-//     async createArrival(data) {
-//         console.log('Enviando datos:', data);
-//         const res = await axios.post(this.baseUrl + 'register', data);
-//         return res.data
-//     }
-// }
-
-// export default new AttendanceService();
-
 import axios from 'axios';
 
 axios.defaults.debug = true;

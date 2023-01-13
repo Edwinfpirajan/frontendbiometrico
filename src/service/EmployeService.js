@@ -10,7 +10,7 @@ class EmployeService {
 
     async save(empleado) {
         const res = await axios.post(this.baseUrl + "save", empleado);
-        console.log(res)
+        console.log(res.data)
         return res.data;
     }
 

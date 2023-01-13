@@ -1,5 +1,5 @@
 import { Box, Typography, useTheme } from "@mui/material";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { DataGrid, GridToolbar, renderActionsCell } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import { useEffect, useState } from "react";
@@ -15,6 +15,7 @@ import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
 import Swal from 'sweetalert2'
 import './custom.css'
+import ScheduleService from "../../service/ScheduleService";
 
 import '/node_modules/primeflex/primeflex.css'
 import { Toolbar } from "primereact/toolbar";
@@ -24,23 +25,59 @@ const Team = () => {
 
   const [employes, setEmployes] = useState([]);
   const [employe, setEmploye] = useState({});
+  const [horary, setHorary] = useState([]);
   const [selectedEmpleado, setSelectedEmpleado] = useState(null)
   const [showModal, setShowModal] = useState(false);
   const [saveSucces, setSaveSucces] = useState(false);
+  const [selectedHorario, setSelectedHorario] = useState(null)
 
-  useEffect(() => {
-    let employeService = new EmployeService();
-    employeService.getAll().then(res => setEmployes(res));
+  const mapSchedules = (schedules) => {
+    return schedules.map(schedule => {
+      return { label: schedule.arrival + ' - ' + schedule.departure, value: schedule.id_sch }
+    });
+  }
+  
+  // useEffect(() => {
+  //     const scheduleService = new ScheduleService();
+  //     scheduleService.getAllSchedule()
+  //       .then(res => {
+  //         setSchedule(mapSchedules(res));
+  //       })
+  //   }, []);
+
+  // useEffect(() => {
+  //   let employeService = new EmployeService();
+  //   employeService.getAll().then(res => setEmployes(res));
+  // }, [!saveSucces])
+
+
+    // useEffect(() => {
+    //   let employeService = new EmployeService();
+    //   employeService.getAll().then(res => {
+    //       const horary = res.map(employe => {
+    //           return { label: employe.arrival + ' - ' + employe.departure, value: employe.id_sch }
+    //       });
+    //       setEmployes(horary);
+    //   });
+    // }, [!saveSucces])
+
+    useEffect(() => {
+      let employeService = new EmployeService();
+      employeService.getAll().then(res => {
+          const employesMapped = res.map(employe => {
+              return { ...employe, horary: `${employe.arrival} - ${employe.departure}` }
+          });
+          setEmployes(employesMapped);
+      });
   }, [!saveSucces])
 
- 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
   // CONTENIDO (ARRAYS) 
   const items = [
-    
-    { 
+
+    {
       label: 'Nuevo',
       icon: PrimeIcons.PLUS,
       command: () => { showSaveModal(true) }
@@ -56,9 +93,9 @@ const Team = () => {
       command: () => { deleteEmpleado(employe?.id) }
     },
     {
-      label:'exportar excel',
+      label: 'exportar excel',
       icon: PrimeIcons.FILE_EXCEL,
-      command: ()=> {exportExcel()}
+      command: () => { exportExcel() }
     }
   ]
 
@@ -75,9 +112,9 @@ const Team = () => {
 
   ];
 
-  const horary =[
-    { label: '8:00 - 12:00', value: 13 },
-  ]
+  // const horary =[
+  //   { label: employe.arrival + ' - ' + employe.departure, value: employe.id_sc, value: 14 },
+  // ]
 
 
   const columns = [
@@ -129,10 +166,10 @@ const Team = () => {
   // FUNCIONES 
 
   // CREAR USUARIOS 
-  
+
   const save = () => {
 
-    if (!employe?.first_name || !employe?.last_name  || !employe?.company  || !employe?.position  || !employe?.schedule_id ) {
+    if (!employe?.first_name || !employe?.last_name || !employe?.company || !employe?.position || !employe?.schedule_id) {
       Swal.fire({
         position: 'center',
         icon: 'error',
@@ -142,18 +179,18 @@ const Team = () => {
         customClass: {
           container: 'my-container-class'
         }
-      })                                                      
-      return        
-  } else {
+      })
+      return
+    } else {
       Swal.fire({
-          position: 'top-end',
-          icon: 'success',
-          title: 'Registro exitoso',
-          showConfirmButton: false,
-          timer: 1500
+        position: 'top-end',
+        icon: 'success',
+        title: 'Registro exitoso',
+        showConfirmButton: false,
+        timer: 1500
       })
       setShowModal(false)
-  }
+    }
 
     let employeService = new EmployeService();
     employeService.save(employe).then(res => {
@@ -162,7 +199,7 @@ const Team = () => {
       setSaveSucces(!saveSucces);
     });
 
-    
+
 
   };
 
@@ -175,7 +212,6 @@ const Team = () => {
     );
   }
 
-  console.log(employes)
   // EDITAR USUARIOS 
 
   const showSaveModal = () => {
@@ -199,42 +235,43 @@ const Team = () => {
 
   const exportExcel = () => {
     import('xlsx').then(xlsx => {
-        const worksheet = xlsx.utils.json_to_sheet(employes);
-        const workbook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
-        const excelBuffer = xlsx.write(workbook, { bookType: 'xlsx', type: 'array' });
-        saveAsExcelFile(excelBuffer, 'employes');
+      const worksheet = xlsx.utils.json_to_sheet(employes);
+      const workbook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
+      const excelBuffer = xlsx.write(workbook, { bookType: 'xlsx', type: 'array' });
+      saveAsExcelFile(excelBuffer, 'employes');
     });
-}
+  }
 
-const saveAsExcelFile = (buffer, fileName) => {
-  import('file-saver').then(module => {
+  const saveAsExcelFile = (buffer, fileName) => {
+    import('file-saver').then(module => {
       if (module && module.default) {
-          let EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
-          let EXCEL_EXTENSION = '.xlsx';
-          const data = new Blob([buffer], {
-              type: EXCEL_TYPE
-          });
+        let EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+        let EXCEL_EXTENSION = '.xlsx';
+        const data = new Blob([buffer], {
+          type: EXCEL_TYPE
+        });
 
-          module.default.saveAs(data, fileName + '_export_' + new Date().getTime() + EXCEL_EXTENSION);
+        module.default.saveAs(data, fileName + '_export_' + new Date().getTime() + EXCEL_EXTENSION);
       }
-  });
-}
+    });
+  }
 
-const exportBtn = () => {
-  return (
-    <Button type="button" label="Exportar Registros" icon="pi pi-download" onClick={exportExcel} className="p-button-success mr-2" data-pr-tooltip="XLS" />
-  )
-}
+  const exportBtn = () => {
+    return (
+      <Button type="button" label="Exportar Registros" icon="pi pi-download" onClick={exportExcel} className="p-button-success mr-2" data-pr-tooltip="XLS" />
+    )
+  }
 
   return (
     <Box m="20px">
       <Header title="EMPLEADOS" subtitle="Administración de empleados" />
-      
-      <Menubar model={items}  style={{
-                                       justifyContent: "center",  
-                                       background: "none", 
-                                       /* border: "none", */
-                                       width: "600px" }} />
+
+      <Menubar model={items} style={{
+        justifyContent: "center",
+        background: "none",
+        /* border: "none", */
+        width: "600px"
+      }} />
       <Box
         m="40px 0 0 0"
         height="75vh"
@@ -276,39 +313,40 @@ const exportBtn = () => {
             toolbarColumnsLabel: "Seleccionar columnas",
             toolbarFilters: "Filtros",
             toolbarExport: "Exportar",
-            collapseDetailPanel:"test",
+            collapseDetailPanel: "test",
             toolbarExport: 'Exportar',
-  toolbarExportLabel: 'Exportar',
-  toolbarExportCSV: 'Descargar como CSV',
-  toolbarExportPrint: 'Imprimir',
-  toolbarExportExcel: 'Descargar como Excel',
-        }}components={{ Toolbar: GridToolbar}}/>
+            toolbarExportLabel: 'Exportar',
+            toolbarExportCSV: 'Descargar como CSV',
+            toolbarExportPrint: 'Imprimir',
+            toolbarExportExcel: 'Descargar como Excel',
+          }} components={{ Toolbar: GridToolbar }} />
         <Dialog header="Empleados" visible={showModal} style={{ width: '50vw' }} footer={renderFooter()} onHide={() => setShowModal(false)} selectedEmpleado>
           <form id="empleado-form">
             <div className="formgrid grid">
               <div className="field col">
                 <span className="p-float-label">
-                  <InputText name="nombre" value={employe?.first_name} onChange={({ target }) => setEmploye({ ...employe, ['first_name']: target.value })} style={{ width: '400px' }}/>
+                  <InputText name="nombre" value={employe.first_name} onChange={({ target }) => setEmploye({ ...employe, ['first_name']: target.value })} style={{ width: '400px' }} />
                   <label htmlFor="fist_name">Nombre</label>
                 </span>
               </div>
               <div className="field col">
                 <span className="p-float-label" >
-                  <InputText name="apellido" value={employe?.last_name} onChange={({ target }) => setEmploye({ ...employe, ['last_name']: target.value })} style={{ width: '400px' }} />
+                  <InputText name="apellido" value={employe.last_name} onChange={({ target }) => setEmploye({ ...employe, ['last_name']: target.value })} style={{ width: '400px' }} />
                   <label htmlFor="last_name">Apellido</label>
                 </span>
               </div>
             </div>
             <div className="formgrid grid">
               <div className="field col">
-                <Dropdown name="empresa" value={employe?.company} options={nCompany} onChange={({ target }) => setEmploye({ ...employe, ['company']: target.value })} placeholder="Selecciona una empresa" style={{ width: "400px" }} />
+                <Dropdown name="empresa" value={employe.company} options={nCompany} onChange={({ target }) => setEmploye({ ...employe, ['company']: target.value })} placeholder="Selecciona una empresa" style={{ width: "400px" }} />
               </div>
               <div className="field col">
-                <Dropdown name="cargo" value={employe?.position} options={nPosition} onChange={({ target }) => setEmploye({ ...employe, ['position']: target.value })} placeholder="Selecciona un cargo" style={{ width: "400px" }} />
+                <Dropdown name="cargo" value={employe.position} options={nPosition} onChange={({ target }) => setEmploye({ ...employe, ['position']: target.value })} placeholder="Selecciona un cargo" style={{ width: "400px" }} />
               </div>
               <div className="field col">
-                <Dropdown name="horario" value={employe?.schedule_id} options={horary} onChange={({ target }) => setEmploye({ ...employe, ['schedule_id']: target.value })} placeholder="Selecciona un horario" style={{ width: "400px" }} />
-              </div>             
+              <Dropdown options={employes.map(employe => ({ label: employe.horary, value: employe.id_sch }))}
+        value={selectedHorario} onChange={e => setSelectedHorario(e.value)} placeholder="Seleccione un horario"/>
+              </div>
             </div>
           </form>
 

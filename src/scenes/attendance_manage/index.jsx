@@ -21,8 +21,10 @@ import { Toolbar } from "primereact/toolbar";
 import { width } from "@mui/system";
 import AttendanceService from '../../service/AttendanceService'
 
-const Testing = () => {
+const Attendance = () => {
   const [attendance, setAttendance] = useState([]);
+  const [visible, setVisible] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,7 +49,10 @@ const formatDate = (time) => {
 }
 
 
-
+const openDialog = (image) => {
+  setVisible(true);
+  setSelectedImage(image);
+}
   // CONTENIDO (ARRAYS) 
   const items = [
     {
@@ -133,7 +138,7 @@ const formatDate = (time) => {
       flex: 2,
       cellClassName: "image-in-table",
       renderCell: (params) => (
-          <img src={params.value} />
+          <img src={params.value} onClick={() => openDialog(params.value)}/>
       ),
   },
     
@@ -211,24 +216,14 @@ const exportBtn = () => {
         }}
       >
         <DataGrid rows={attendance} /* checkboxSelection */
-          dataKey="id" columns={columns} className="custom-row-height" localeText={{
-            noRowsLabel: "No se ha encontrado datos.",
-            noResultsOverlayLabel: "No se ha encontrado ningún resultado",
-            toolbarColumns: "Columnas",
-            toolbarColumnsLabel: "Seleccionar columnas",
-            toolbarFilters: "Filtros",
-            toolbarExport: "Exportar",
-            collapseDetailPanel:"test",
-            toolbarExport: 'Exportar',
-  toolbarExportLabel: 'Exportar',
-  toolbarExportCSV: 'Descargar como CSV',
-  toolbarExportPrint: 'Imprimir',
-  toolbarExportExcel: 'Descargar como Excel',
-        }}components={{ Toolbar: GridToolbar}}/>
+          dataKey="id" columns={columns} className="custom-row-height" components={{ Toolbar: GridToolbar}}/>
       </Box>
+      <Dialog visible={visible} header="Foto" modal={true} onHide={() => setVisible(false)}>
+      <img src={selectedImage} style={{ width: "100%"}} />
+    </Dialog>
     </Box>
   );
 };
 
 
-export default Testing;
+export default Attendance;

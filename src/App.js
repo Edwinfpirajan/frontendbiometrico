@@ -5,7 +5,6 @@ import Sidebar from "./scenes/global/Sidebar";
 import Dashboard from "./scenes/dashboard";
 import EmployeManage from "./scenes/employe-manage";
 import AttendanceManage from "./scenes/attendance_manage";
-import Test from './scenes/attendance_manage'
 import Invoices from "./scenes/invoices";
 import Contacts from "./scenes/contacts";
 import Bar from "./scenes/bar";
@@ -14,7 +13,6 @@ import Line from "./scenes/line";
 import Pie from "./scenes/pie";
 import FAQ from "./scenes/faq";
 import Login from "./scenes/login"
-import Testing from "./scenes/testing"
 import AttendanceLogin from "./scenes/attendance_login"
 import Geography from "./scenes/geography";
 import { CssBaseline, ThemeProvider } from "@mui/material";
@@ -37,7 +35,6 @@ function App() {
             <Routes>
             <Route index element={<AttendanceLogin />} />
               <Route path="/" element={<AttendanceLogin />} />
-              <Route path="/testing" element={<Testing />} />
               <Route path="/login/admin" element={<Login />} />
               <Route path="/dash" element={<Dashboard />} />
               <Route path="/manage/employe" element={<EmployeManage />} />
