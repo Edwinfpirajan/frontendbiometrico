@@ -5,6 +5,7 @@ import Sidebar from "./scenes/global/Sidebar";
 import Dashboard from "./scenes/dashboard";
 import EmployeManage from "./scenes/employe-manage";
 import AttendanceManage from "./scenes/attendance_manage";
+import ScheduleManage from "./scenes/schedule_manager"
 import Invoices from "./scenes/invoices";
 import Contacts from "./scenes/contacts";
 import Bar from "./scenes/bar";
@@ -39,6 +40,7 @@ function App() {
               <Route path="/dash" element={<Dashboard />} />
               <Route path="/manage/employe" element={<EmployeManage />} />
               <Route path="/manage/attendance" element={<AttendanceManage />} />
+              <Route path="/manage/schedule" element={<ScheduleManage />} />
               {/* <Route path="/contacts" element={<Contacts />} /> */}
               <Route path="/invoices" element={<Invoices />} />
               <Route path="/form" element={<Form />} />

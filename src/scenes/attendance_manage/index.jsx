@@ -25,53 +25,43 @@ const Attendance = () => {
   const [attendance, setAttendance] = useState([]);
   const [visible, setVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
 
   useEffect(() => {
     const fetchData = async () => {
-        const data = await AttendanceService.getAllAttendance();
-        setAttendance(data);
+      const data = await AttendanceService.getAllAttendance();
+      setAttendance(data);
     };
     fetchData();
-}, []);
-const theme = useTheme();
-const colors = tokens(theme.palette.mode);
-
-const formatTime = (time) => {
-  if (!time) return '';   
-  let date = new Date(time);
-  let options = {hour: 'numeric', minute: 'numeric'};
-  return date.toLocaleTimeString('en-US', options);
-} 
-const formatDate = (time) => {
-  let date = new Date(time);
-  let options = { day: '2-digit', month: 'long', year: 'numeric' };
-  return date.toLocaleDateString('es-ES', options);
-}
+  }, []);
 
 
-const openDialog = (image) => {
-  setVisible(true);
-  setSelectedImage(image);
-}
+  const formatTime = (time) => {
+    if (!time) return '';
+    let date = new Date(time);
+    let options = { hour: 'numeric', minute: 'numeric' };
+    return date.toLocaleTimeString('en-US', options);
+  }
+  const formatDate = (time) => {
+    let date = new Date(time);
+    let options = { day: '2-digit', month: 'long', year: 'numeric' };
+    return date.toLocaleDateString('es-ES', options);
+  }
+
+
+  const openDialog = (image) => {
+    setVisible(true);
+    setSelectedImage(image);
+  }
   // CONTENIDO (ARRAYS) 
   const items = [
     {
-      label:'exportar excel',
+      label: 'exportar excel',
       icon: PrimeIcons.FILE_EXCEL,
-      command: ()=> {exportExcel()}
+      command: () => { exportExcel() }
     }
   ]
-
-  // const imageBodyTemplate = (attendance) => {
-  //   if(!attendance.photo){
-  //   return <span>No photo</span>
-  //   }
-  //   return <img src={attendance.photo} alt={attendance.first_name}/>;
-  //   }
-
-  const imageBodyTemplate = (attendance) => {
-    return <img src={`${attendance.photo}`} style={{width: "50px", height: "50px"}} className="product-image" />;
-}  
 
   const columns = [
     {
@@ -98,7 +88,7 @@ const openDialog = (image) => {
       flex: 1,
       renderCell: (params) => (
         <strong>{formatDate(params.value)}</strong>
-      ),   
+      ),
     },
     {
       field: "arrival",
@@ -134,55 +124,56 @@ const openDialog = (image) => {
     },
     {
       field: "photo",
-      header: "Imagen",
+      headerName: "Foto",
       flex: 2,
       cellClassName: "image-in-table",
       renderCell: (params) => (
-          <img src={params.value} onClick={() => openDialog(params.value)}/>
+        <img src={params.value} onClick={() => openDialog(params.value)} />
       ),
-  },
-    
+    },
+
   ];
 
   const exportExcel = () => {
     import('xlsx').then(xlsx => {
-        const worksheet = xlsx.utils.json_to_sheet(attendance);
-        const workbook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
-        const excelBuffer = xlsx.write(workbook, { bookType: 'xlsx', type: 'array' });
-        saveAsExcelFile(excelBuffer, 'employes');
+      const worksheet = xlsx.utils.json_to_sheet(attendance);
+      const workbook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
+      const excelBuffer = xlsx.write(workbook, { bookType: 'xlsx', type: 'array' });
+      saveAsExcelFile(excelBuffer, 'employes');
     });
-}
+  }
 
-const saveAsExcelFile = (buffer, fileName) => {
-  import('file-saver').then(module => {
+  const saveAsExcelFile = (buffer, fileName) => {
+    import('file-saver').then(module => {
       if (module && module.default) {
-          let EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
-          let EXCEL_EXTENSION = '.xlsx';
-          const data = new Blob([buffer], {
-              type: EXCEL_TYPE
-          });
+        let EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+        let EXCEL_EXTENSION = '.xlsx';
+        const data = new Blob([buffer], {
+          type: EXCEL_TYPE
+        });
 
-          module.default.saveAs(data, fileName + '_export_' + new Date().getTime() + EXCEL_EXTENSION);
+        module.default.saveAs(data, fileName + '_export_' + new Date().getTime() + EXCEL_EXTENSION);
       }
-  });
-}
+    });
+  }
 
-const exportBtn = () => {
-  return (
-    <Button type="button" label="Exportar Registros" icon="pi pi-download" onClick={exportExcel} className="p-button-success mr-2" data-pr-tooltip="XLS" />
-  )
-}
+  const exportBtn = () => {
+    return (
+      <Button type="button" label="Exportar Registros" icon="pi pi-download" onClick={exportExcel} className="p-button-success mr-2" data-pr-tooltip="XLS" />
+    )
+  }
 
   return (
-    
+
     <Box m="20px">
       <Header title="EMPLEADOS" subtitle="Administración de empleados" />
-      
-      <Menubar model={items}  style={{
-                                       justifyContent: "center",  
-                                       background: "none", 
-                                       /* border: "none", */
-                                       width: "200px" }} />
+
+      <Menubar model={items} style={{
+        justifyContent: "center",
+        background: "none",
+        /* border: "none", */
+        width: "200px"
+      }} />
       <Box
         m="40px 0 0 0"
         height="75vh"
@@ -215,12 +206,14 @@ const exportBtn = () => {
           },
         }}
       >
-        <DataGrid rows={attendance} /* checkboxSelection */
-          dataKey="id" columns={columns} className="custom-row-height" components={{ Toolbar: GridToolbar}}/>
+        <DataGrid rows={attendance}
+          dataKey="id" columns={columns}
+          className="custom-row-height"
+          components={{ Toolbar: GridToolbar }} />
       </Box>
       <Dialog visible={visible} header="Foto" modal={true} onHide={() => setVisible(false)}>
-      <img src={selectedImage} style={{ width: "100%"}} />
-    </Dialog>
+        <img src={selectedImage} style={{ width: "100%", borderRadius: "10px" }} />
+      </Dialog>
     </Box>
   );
 };

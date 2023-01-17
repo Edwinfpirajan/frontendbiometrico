@@ -16,6 +16,8 @@ import { Dropdown } from 'primereact/dropdown';
 import Swal from 'sweetalert2'
 import './custom.css'
 import ScheduleService from "../../service/ScheduleService";
+import moment from "moment";
+import ScheduleManage from "../schedule_manager";
 
 import '/node_modules/primeflex/primeflex.css'
 import { Toolbar } from "primereact/toolbar";
@@ -28,48 +30,29 @@ const Team = () => {
   const [horary, setHorary] = useState([]);
   const [selectedEmpleado, setSelectedEmpleado] = useState(null)
   const [showModal, setShowModal] = useState(false);
+  const [showModalHorary, setShowModalHorary] = useState(false);
   const [saveSucces, setSaveSucces] = useState(false);
   const [selectedHorario, setSelectedHorario] = useState(null)
 
   const mapSchedules = (schedules) => {
     return schedules.map(schedule => {
-      return { label: schedule.arrival + ' - ' + schedule.departure, value: schedule.id_sch }
+      return { label: schedule.arrival + ' - ' + schedule.departure, value: schedule.id_sch}
     });
   }
-  
-  // useEffect(() => {
-  //     const scheduleService = new ScheduleService();
-  //     scheduleService.getAllSchedule()
-  //       .then(res => {
-  //         setSchedule(mapSchedules(res));
-  //       })
-  //   }, []);
 
-  // useEffect(() => {
-  //   let employeService = new EmployeService();
-  //   employeService.getAll().then(res => setEmployes(res));
-  // }, [!saveSucces])
+  useEffect(() => {
+    const scheduleService = new ScheduleService();
+    scheduleService.getAllSchedule()
+      .then(res => {
+        setHorary(mapSchedules(res));
+      })
+  }, []);
 
-
-    // useEffect(() => {
-    //   let employeService = new EmployeService();
-    //   employeService.getAll().then(res => {
-    //       const horary = res.map(employe => {
-    //           return { label: employe.arrival + ' - ' + employe.departure, value: employe.id_sch }
-    //       });
-    //       setEmployes(horary);
-    //   });
-    // }, [!saveSucces])
-
-    useEffect(() => {
-      let employeService = new EmployeService();
-      employeService.getAll().then(res => {
-          const employesMapped = res.map(employe => {
-              return { ...employe, horary: `${employe.arrival} - ${employe.departure}` }
-          });
-          setEmployes(employesMapped);
-      });
+  useEffect(() => {
+    let employeService = new EmployeService();
+    employeService.getAll().then(res => setEmployes(res));
   }, [!saveSucces])
+
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -90,12 +73,17 @@ const Team = () => {
     {
       label: 'Eliminar',
       icon: PrimeIcons.TRASH,
-      command: () => { deleteEmpleado(employe?.id) }
+      command: () => { deleteEmployeQuestion() }
     },
     {
       label: 'exportar excel',
       icon: PrimeIcons.FILE_EXCEL,
       command: () => { exportExcel() }
+    },
+    {
+      label: 'ajustar horarios',
+      icon: PrimeIcons.CLOCK,
+      command: () => { editHorary() }
     }
   ]
 
@@ -111,11 +99,6 @@ const Team = () => {
     { label: 'Lider Tienda', value: 'Lider Tienda' }
 
   ];
-
-  // const horary =[
-  //   { label: employe.arrival + ' - ' + employe.departure, value: employe.id_sc, value: 14 },
-  // ]
-
 
   const columns = [
     {
@@ -169,7 +152,7 @@ const Team = () => {
 
   const save = () => {
 
-    if (!employe?.first_name || !employe?.last_name || !employe?.company || !employe?.position || !employe?.schedule_id) {
+    if (!employe?.first_name || !employe?.last_name || !employe?.company || !employe?.position || !employe?.schedule_id ) {
       Swal.fire({
         position: 'center',
         icon: 'error',
@@ -183,7 +166,7 @@ const Team = () => {
       return
     } else {
       Swal.fire({
-        position: 'top-end',
+        position: 'center',
         icon: 'success',
         title: 'Registro exitoso',
         showConfirmButton: false,
@@ -222,10 +205,35 @@ const Team = () => {
   const edit = () => {
     setShowModal(true);
   }
+  const editHorary = () => {
+    setShowModalHorary(true);
+  }
 
   const getInfo = (id) => {
     let employeService = new EmployeService();
     employeService.getInfo(id).then(data => setEmploye(data))
+  }
+
+  const deleteEmployeQuestion = () =>{
+    Swal.fire({
+      title: '¿Estas seguro de eliminar este registro?',
+      text: "No podras revertir esta accion",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: 'rgb(83, 75, 240)',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Si, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteEmpleado(employe?.id)
+        Swal.fire(
+          'Eliminado!',
+          'El registro ha sido eliminado',
+          'success'
+        )
+      }
+    })
   }
 
   const deleteEmpleado = (id) => {
@@ -270,7 +278,7 @@ const Team = () => {
         justifyContent: "center",
         background: "none",
         /* border: "none", */
-        width: "600px"
+        width: "750px"
       }} />
       <Box
         m="40px 0 0 0"
@@ -325,32 +333,35 @@ const Team = () => {
             <div className="formgrid grid">
               <div className="field col">
                 <span className="p-float-label">
-                  <InputText name="nombre" value={employe.first_name} onChange={({ target }) => setEmploye({ ...employe, ['first_name']: target.value })} style={{ width: '400px' }} />
+                  <InputText name="nombre" value={employe?.first_name} onChange={({ target }) => setEmploye({ ...employe, ['first_name']: target.value })} style={{ width: '400px' }} />
                   <label htmlFor="fist_name">Nombre</label>
                 </span>
               </div>
               <div className="field col">
                 <span className="p-float-label" >
-                  <InputText name="apellido" value={employe.last_name} onChange={({ target }) => setEmploye({ ...employe, ['last_name']: target.value })} style={{ width: '400px' }} />
+                  <InputText name="apellido" value={employe?.last_name} onChange={({ target }) => setEmploye({ ...employe, ['last_name']: target.value })} style={{ width: '400px' }} />
                   <label htmlFor="last_name">Apellido</label>
                 </span>
               </div>
             </div>
             <div className="formgrid grid">
               <div className="field col">
-                <Dropdown name="empresa" value={employe.company} options={nCompany} onChange={({ target }) => setEmploye({ ...employe, ['company']: target.value })} placeholder="Selecciona una empresa" style={{ width: "400px" }} />
+                <Dropdown name="empresa" value={employe?.company} options={nCompany} onChange={({ target }) => setEmploye({ ...employe, ['company']: target.value })} placeholder="Selecciona una empresa" style={{ width: "400px" }} />
               </div>
               <div className="field col">
-                <Dropdown name="cargo" value={employe.position} options={nPosition} onChange={({ target }) => setEmploye({ ...employe, ['position']: target.value })} placeholder="Selecciona un cargo" style={{ width: "400px" }} />
+                <Dropdown name="cargo" value={employe?.position} options={nPosition} onChange={({ target }) => setEmploye({ ...employe, ['position']: target.value })} placeholder="Selecciona un cargo" style={{ width: "400px" }} />
               </div>
               <div className="field col">
-              <Dropdown options={employes.map(employe => ({ label: employe.horary, value: employe.id_sch }))}
-        value={selectedHorario} onChange={e => setSelectedHorario(e.value)} placeholder="Seleccione un horario"/>
-              </div>
+                <Dropdown name="horario" value={employe?.schedule_id} options={horary} onChange={({ target }) => setEmploye({ ...employe, ['schedule_id']: target.value })} placeholder="Selecciona un horario" style={{ width: "400px" }} />
+              </div> 
             </div>
           </form>
 
 
+        </Dialog>
+
+        <Dialog visible={showModalHorary} style={{ /* width: '30vw', */ backgroundColor:"none" }} onHide={() => setShowModalHorary(false)} >
+          <ScheduleManage />
         </Dialog>
 
       </Box>

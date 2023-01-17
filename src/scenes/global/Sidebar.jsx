@@ -148,6 +148,13 @@ const Sidebar = () => {
               setSelected={setSelected}
             />
             <Item
+              title="Administrar horario"
+              to="/manage/schedule"
+              icon={<AlarmOnIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
               title="Contacts Information"
               to="/contacts"
               icon={<ContactsOutlinedIcon />}

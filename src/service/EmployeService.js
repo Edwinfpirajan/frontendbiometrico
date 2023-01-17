@@ -5,6 +5,7 @@ class EmployeService {
 
     async getAll() {
         const res = await axios.get(this.baseUrl + "all");
+        // console.log(res.data);
         return res.data;
     }
 
