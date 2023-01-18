@@ -7,6 +7,9 @@ import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { classNames } from 'primereact/utils';
 import { InputTextarea } from 'primereact/inputtextarea';
+import Swal from 'sweetalert2'
+import axios from 'axios';
+
 
 const ScheduleManage = () => {
     const [schedules, setSchedules] = useState([]);
@@ -29,14 +32,47 @@ const ScheduleManage = () => {
             
     )
 
+    const deleteScheduleQuestion = (id) =>{
+        Swal.fire({
+          title: '¿Estas seguro de eliminar este registro?',
+          text: "No podras revertir esta accion",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: 'rgb(83, 75, 240)',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Si, eliminar',
+          cancelButtonText: 'Cancelar'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            onDelete(id)
+            Swal.fire(
+              'Eliminado!',
+              'El registro ha sido eliminado',
+              'success'
+            )
+          }
+        })
+      }
+        
+    const onDelete = async (id) => {
+        try {
+            const scheduleService = new ScheduleService();
+            const isDeleted = await scheduleService.delete(id);
+            if (isDeleted) {
+                const schedules = await scheduleService.getAllSchedule();
+                setSchedules(schedules);
+                Swal.fire('Eliminado!', 'El registro ha sido eliminado', 'success');
+            }
+        } catch (error) {
+            console.log(error);
+            Swal.fire('Error', 'Ocurrió un error al eliminar el registro', 'error');
+        }
+    };
+
+
     const editSchedule = (schedule) => {
         setSchedule({...schedule});
         setScheduleDialog(true);
-    }
-
-    const confirmDeleteSchedule = (schedule) => {
-        setSchedule(schedule);
-        setDeleteScheduleDialog(true);
     }
 
     const actionBodyTemplate = (rowData) => {
@@ -44,7 +80,7 @@ const ScheduleManage = () => {
             <React.Fragment>
                 <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2" style={{backgroundColor:"#3E4396",
                 border:"none"}} onClick={() => editSchedule(rowData)} />
-                {/* <Button icon="pi pi-trash" className="p-button-rounded p-button-warning" onClick={() => confirmDeleteSchedule(rowData)} /> */}
+                 <Button icon="pi pi-trash" className="p-button-rounded p-button-warning" onClick={() => onDelete(rowData.id_sch)} /> 
             </React.Fragment>
         );
     }
@@ -67,7 +103,7 @@ const ScheduleManage = () => {
 
     let scheduleService = new ScheduleService();
     console.log(schedule)
-    scheduleService.updateSchedule(schedule).then(res => {
+    scheduleService.saveSchedule(schedule).then(res => {
       setSchedule({})
       setScheduleDialog(false);
       setSaveSucces(!saveSucces);
@@ -79,6 +115,7 @@ const ScheduleManage = () => {
     //     setScheduleDialog(false);
     //   });
     }
+
 
     const renderFooter = () => {
         return (
@@ -93,6 +130,7 @@ const ScheduleManage = () => {
         <div>
             <div className="card">
                 <DataTable value={schedules} style={{width:"600px", margin:"0 auto"}} header={header} /* footer="Footer"  */showGridlines responsiveLayout="scroll" >
+                    {/* <Column className='text-center' field="id_sch" header="llegada"></Column> */}
                     <Column className='text-center' field="arrival" header="llegada"></Column>
                     <Column className='text-center' field="departure" header="salida"></Column>
                     <Column header="opciones" body={actionBodyTemplate} /* exportable={false} */  style={{ maxWidth: '4rem' }} ></Column>
@@ -103,10 +141,6 @@ const ScheduleManage = () => {
                     <label htmlFor="arrival">Horas</label>
                     <input type="time" style={{fontSize:"1.2em", marginRight:"30px"}} id='arrival' value={schedule?.arrival} onChange={(e) => onInputChange(e, 'arrival')} />
                     <input type="time" style={{fontSize:"1.2em"}} id='departure' value={schedule?.departure} onChange={(e) => onInputChange(e, 'departure')} />
-                    {/* <InputTextarea id="arrival" value={schedule?.arrival} onChange={(e) => onInputChange(e, 'arrival')} required rows={3} cols={20} />
-                    <InputTextarea id="departure" value={schedule?.departure} onChange={(e) => onInputChange(e, 'departure')} required rows={3} cols={20} /> */}
-                     {/* <InputText name="arrival" value={schedule?.arrival} onChange={({ target }) => setSchedule({ ...schedule, ['arrival']: target.value })} style={{ width: '400px' }} />
-                     <InputText name="departure" value={schedule?.departure} onChange={({ target }) => setSchedule({ ...schedule, ['departure']: target.value })} style={{ width: '400px' }} /> */}
                 </div>
                 </form>
                 </Dialog>
