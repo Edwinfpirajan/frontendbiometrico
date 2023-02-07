@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: "http://distriramirez.com.com:8080"
+    baseURL: 'http://107.6.54.56:8080'
 });
 
 // Obtener el token del almacenamiento local

@@ -4,12 +4,10 @@ import Swal from 'sweetalert2'
 
 import './service.css'
 
-const baseURL = 'http://distriramirez.com.co:8080'
-
 export const AdminService = {
     async login(data) {
         try {
-            const res = await api.post(`${baseURL}/login`, data);
+            const res = await api.post(`login`, data);
             localStorage.setItem('token', JSON.stringify(res.data.token))
             window.location.href = '/'
         } catch (error) {
@@ -24,7 +22,7 @@ export const AdminService = {
     },
     async logout() {
         try {
-            await api.post(`${baseURL}/logout`, HeaderPost);
+            await api.post(`logout`, HeaderPost);
             localStorage.removeItem('token')
             window.location.href = '/login/admin'
         } catch (error) {
