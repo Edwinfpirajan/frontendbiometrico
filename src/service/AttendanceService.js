@@ -1,17 +1,16 @@
 import axios from 'axios';
 import Swal from 'sweetalert2'
 
-const baseUrl = "http://distriramirez.com.com:8080/api/attendance";
-
+axios.defaults.baseURL = "http://107.6.54.56:8080/api/attendance";
 export const AttendanceService = {
     async getAllAttendance() {
-        const res = await axios.get(`${baseUrl}`);
+        const res = await axios.get("");
         console.log("debería llegar así:", res.data)
         return res.data;
     },
     async validate(pin) {
         try {
-            await axios.get(`${baseUrl}/validate/${pin}`);
+            await axios.get(`validate/${pin}`);
         } catch (error) {
             Swal.fire({
                 icon: 'error',
@@ -25,7 +24,7 @@ export const AttendanceService = {
     },
     async createArrival(data) {
         try {
-            const res = await axios.post(`${baseUrl}/register`, JSON.stringify(data), {
+            const res = await axios.post(`register`, JSON.stringify(data), {
                 headers: {
                     "Content-Type": "application/json",
                 }
