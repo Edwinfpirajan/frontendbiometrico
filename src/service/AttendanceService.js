@@ -1,31 +1,52 @@
 import axios from 'axios';
+import Swal from 'sweetalert2'
 
-axios.defaults.debug = true;
+const baseUrl = "http://distriramirez.com.com:8080/api/attendance";
 
-class AttendanceService {
-    baseUrl = "http://localhost:3001/api/";
-
-    async getAllAttendance(){
-        const res = await axios.get(this.baseUrl + "attendance");
-        console.log("debería llegar así:",res.data)
+export const AttendanceService = {
+    async getAllAttendance() {
+        const res = await axios.get(`${baseUrl}`);
+        console.log("debería llegar así:", res.data)
         return res.data;
-    }
+    },
+    async validate(pin) {
+        try {
+            await axios.get(`${baseUrl}/validate/${pin}`);
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.response.data.message
+            });
+            console.log(error)
+            throw new Error("Error al validar")
+        }
 
+    },
     async createArrival(data) {
-        console.log("Enviando datos:", data);
-        const res = await axios.post(this.baseUrl + "register", JSON.stringify(data), {
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
-        console.log("Datos recibidos:", res.data);
-        return res.data;
+        try {
+            const res = await axios.post(`${baseUrl}/register`, JSON.stringify(data), {
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+            console.log("debería llegar así:", res.data)
+            Swal.fire({
+                position: 'center',
+                icon: 'success',
+                title: 'Registro exitoso',
+                showConfirmButton: false,
+                timer: 1500
+            })
+
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: error.response.data.message
+            })
+            console.log(error)
+        }
     }
 
-    async validatePin(pin) {
-        const res = await axios.get(this.baseUrl + "employes/pin/" + pin);
-        return res.data;
-    }
 }
-
-export default new AttendanceService();

@@ -1,10 +1,22 @@
-import { preventDefault } from '@fullcalendar/core';
-import logoDistri from '../../img/logos/logo.png'
-import Swal from 'sweetalert2'
 import React, { useRef, useState } from 'react';
+
+//COMPONENTS
+import Swal from 'sweetalert2'
 import Webcam from 'react-webcam';
-import AttendanceService from '../../service/AttendanceService'
+import Animate from './animate'
+
+
+//IMAGES
+// import bgLogin from '../../img/toolsImg/background-01.jpg'
+import logoDistri from '../../img/logos/logo.png'
+
+// SERVICES
+import {AttendanceService} from '../../service/AttendanceService'
+
+// STYLES 
 import './style.css';
+import 'primeicons/primeicons.css';
+
 
 const Formulario = () => {
     const webcamRef = useRef(null);
@@ -17,63 +29,37 @@ const Formulario = () => {
         setPhoto(imageSrc);
     }
 
-    // const handleValidatePin = (e) => {
-    //     e.preventDefault();
-    //     AttendanceService.validatePin(pinEmploye).then((employe) => {
-    //       if (employe) {
-    //         Swal.fire({
-    //           icon: "success",
-    //           title: `Empleado encontrado`,
-    //           html: `
-    //             <p>Nombre: ${employe.first_name} ${employe.last_name}</p>
-    //             <p>Empresa: ${employe.company}</p>
-    //             <p>Cargo: ${employe.position}</p>
-    //           `,
-    //         });
-    //       }
-    //     });
-    //   };
-
     const handleSubmit = async (e) => {
         e.preventDefault()
-
         takePhoto()
-
-        if (pinEmploye === '') {
+    
+        if (pinEmploye === '' || state === '') {
             Swal.fire({
                 icon: 'error',
                 title: 'Oops...',
                 text: 'Todos los campos son obligatorios!',
             })
-            return;
         } else {
-            Swal.fire({
-                position: 'center',
-                icon: 'success',
-                title: 'Registro exitoso',
-                showConfirmButton: false,
-                timer: 1500
-            })
-        }
-
-        // console.log(photo);                              
+            await AttendanceService.validate(pinEmploye);   
+        
         await AttendanceService.createArrival({
-            pinEmploye,
-            state,
-            photo
-        });
+                pinEmploye,
+                state,  
+                photo
+            }); 
+        }
     }
 
-
     return (
-        <section className='container'>
+        <section className='container-attendence'>
+            <Animate /> 
+            <a className='btn-admin-login' href='/login/admin'><h2><i className='pi pi-box  '></i> Dashboard</h2></a>
             <div className='contenido'>
                 <div className='content1' >
                     <div className='cam-content'>
                         <img src={logoDistri} className="logo-distri" />
                         <Webcam
                             audio={false}
-                            // height={320}
                             ref={webcamRef}
                             screenshotFormat="image/jpeg"
                             width={380}
@@ -93,6 +79,8 @@ const Formulario = () => {
                                     value={pinEmploye}
                                     onChange={event => setPinEmploye(event.target.value)}
                                 />
+                                {/* <Link to={LoginAdmin}><button>swqwqw</button></Link> */}
+                                
                             </div>
                             <div className="wrapper">
                                 <input

@@ -17,6 +17,7 @@ import PieChartOutlineOutlinedIcon from "@mui/icons-material/PieChartOutlineOutl
 import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
+import LockIcon from '@mui/icons-material/Lock';
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -71,6 +72,7 @@ const Sidebar = () => {
             style={{
               margin: "10px 0 20px 0",
               color: colors.grey[100],
+              display:"flex"
             }}
           >
             {!isCollapsed && (
@@ -81,7 +83,7 @@ const Sidebar = () => {
                 ml="15px"
               >
                 <Typography variant="h3" color={colors.grey[100]}>
-                  ADMINIS
+                  BOREAL ADMIN
                 </Typography>
                 <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
                   <MenuOutlinedIcon />
@@ -108,10 +110,10 @@ const Sidebar = () => {
                   fontWeight="bold"
                   sx={{ m: "10px 0 0 0" }}
                 >
-                  Ferxo Admin
+                  Administrador
                 </Typography>
                 <Typography variant="h5" color={colors.greenAccent[500]}>
-                  Developer
+                  Gestión Humana
                 </Typography>
               </Box>
             </Box>
@@ -131,45 +133,45 @@ const Sidebar = () => {
               color={colors.grey[300]}
               sx={{ m: "15px 0 5px 20px" }}
             >
-              Data
+              Admin
             </Typography>
             <Item
-              title="Administrar Equipo"
+              title="Administrar equipo"
               to="/manage/employe"
               icon={<PeopleOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
-              title="Control Asistencias"
+              title="Control asistencias"
               to="/manage/attendance"
               icon={<AlarmOnIcon />}
               selected={selected}
               setSelected={setSelected}
             />
-            <Item
+            {/* <Item
               title="Administrar horario"
               to="/manage/schedule"
               icon={<AlarmOnIcon />}
               selected={selected}
               setSelected={setSelected}
-            />
+            /> */}
             <Item
-              title="Contacts Information"
-              to="/contacts"
-              icon={<ContactsOutlinedIcon />}
+              title="Avance nómina"
+              to=""
+              icon={<LockIcon style={{color:"rgb(207, 2, 2)"}}/>}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
-              title="Invoices Balances"
-              to="/invoices"
-              icon={<ReceiptOutlinedIcon />}
+              title="Balance nómina"
+              to=""
+              icon={<LockIcon style={{color:"rgb(207, 2, 2)"}}/>}
               selected={selected}
               setSelected={setSelected}
             />
 
-            <Typography
+            {/* <Typography
               variant="h6"
               color={colors.grey[300]}
               sx={{ m: "15px 0 5px 20px" }}
@@ -232,8 +234,8 @@ const Sidebar = () => {
               icon={<MapOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
-            />
-            <h3>V 1.0.0</h3>
+            /> */}
+            <h3 >V 0.0.6</h3>
            
           </Box>
         </Menu>

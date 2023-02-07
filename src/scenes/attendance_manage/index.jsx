@@ -1,25 +1,25 @@
+import { useEffect, useState } from "react";
+
+// COMPONENTS 
 import { Box, Typography, useTheme } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
-import { useEffect, useState } from "react";
-import EmployeService from "../../service/EmployeService";
 import { PrimeIcons } from 'primereact/api'
 import { Menubar } from 'primereact/menubar';
-import "primereact/resources/themes/lara-light-indigo/theme.css";  //theme
-import "primereact/resources/primereact.min.css";                  //core css
-import "primeicons/primeicons.css";
 import { Dialog } from 'primereact/dialog';
-import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
-import { Dropdown } from 'primereact/dropdown';
-import Swal from 'sweetalert2'
-import './custom.css'
+import { Translate } from "../../tools/translate";
 
+// SERVICES 
+import {AttendanceService} from '../../service/AttendanceService'
+
+// STYLES 
+import "primereact/resources/themes/lara-light-indigo/theme.css";  
+import "primereact/resources/primereact.min.css";                  
+import "primeicons/primeicons.css";
 import '/node_modules/primeflex/primeflex.css'
-import { Toolbar } from "primereact/toolbar";
-import { width } from "@mui/system";
-import AttendanceService from '../../service/AttendanceService'
+import './custom.css'
 
 const Attendance = () => {
   const [attendance, setAttendance] = useState([]);
@@ -209,7 +209,8 @@ const Attendance = () => {
         <DataGrid rows={attendance}
           dataKey="id" columns={columns}
           className="custom-row-height"
-          components={{ Toolbar: GridToolbar }} />
+          components={{ Toolbar: GridToolbar }}
+          localeText={Translate}  />
       </Box>
       <Dialog visible={visible} header="Foto" modal={true} onHide={() => setVisible(false)}>
         <img src={selectedImage} style={{ width: "100%", borderRadius: "10px" }} />

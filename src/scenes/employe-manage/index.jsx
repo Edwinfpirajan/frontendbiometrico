@@ -3,11 +3,11 @@ import { DataGrid, GridToolbar, renderActionsCell } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import { useEffect, useState } from "react";
-import EmployeService from "../../service/EmployeService";
+import { EmployeeService } from "../../service/EmployeeService";
 import { PrimeIcons } from 'primereact/api'
 import { Menubar } from 'primereact/menubar';
 import "primereact/resources/themes/lara-light-indigo/theme.css";  //theme
-import "primereact/resources/primereact.min.css";                  //core css
+import "primereact/resources/primereact.min.css";                    
 import "primeicons/primeicons.css";
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
@@ -15,10 +15,10 @@ import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
 import Swal from 'sweetalert2'
 import './custom.css'
-import ScheduleService from "../../service/ScheduleService";
+import {ScheduleService} from "../../service/ScheduleService";
 import moment from "moment";
 import ScheduleManage from "../schedule_manager";
-
+import { Translate } from "../../tools/translate";
 import '/node_modules/primeflex/primeflex.css'
 import { Toolbar } from "primereact/toolbar";
 import { width } from "@mui/system";
@@ -26,13 +26,12 @@ import { width } from "@mui/system";
 const Team = () => {
 
   const [employes, setEmployes] = useState([]);
-  const [employe, setEmploye] = useState({});
+  const [employee, setEmployee] = useState({});
   const [horary, setHorary] = useState([]);
-  const [selectedEmpleado, setSelectedEmpleado] = useState(null)
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showModalHorary, setShowModalHorary] = useState(false);
   const [saveSucces, setSaveSucces] = useState(false);
-  const [selectedHorario, setSelectedHorario] = useState(null)
 
   const mapSchedules = (schedules) => {
     return schedules.map(schedule => {
@@ -41,22 +40,34 @@ const Team = () => {
   }
 
   useEffect(() => {
-    const scheduleService = new ScheduleService();
-    scheduleService.getAllSchedule()
+    ScheduleService.getAllSchedule()
       .then(res => {
         setHorary(mapSchedules(res));
       })
-  }, []);
+  }, [!saveSucces]);
 
   useEffect(() => {
-    let employeService = new EmployeService();
-    employeService.getAll().then(res => setEmployes(res));
+    EmployeeService.getAll().then(res => setEmployes(res));
   }, [!saveSucces])
 
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
+  const handleSelectEmployee = (employee) => {
+    deselectAllExcept(employee);
+    employee.selected = !employee.selected;
+    setSelectedEmployee(employee);
+  }
+
+  const deselectAllExcept = (except) => {
+    employes.forEach((employe) => {
+        if (employe !== except) {
+            employe.selected = false;
+        }
+    });
+  };
+  
   // CONTENIDO (ARRAYS) 
   const items = [
 
@@ -73,7 +84,7 @@ const Team = () => {
     {
       label: 'Eliminar',
       icon: PrimeIcons.TRASH,
-      command: () => { deleteEmployeQuestion() }
+      command: () => { deleteEmployeeQuestion() }
     },
     {
       label: 'exportar excel',
@@ -101,6 +112,7 @@ const Team = () => {
   ];
 
   const columns = [
+    
     {
       field: "pinEmploye",
       headerName: "PIN",
@@ -152,7 +164,7 @@ const Team = () => {
 
   const save = () => {
 
-    if (!employe?.first_name || !employe?.last_name || !employe?.company || !employe?.position || !employe?.schedule_id ) {
+    if (!employee?.first_name || !employee?.last_name || !employee?.company || !employee?.position || !employee?.schedule_id ) {
       Swal.fire({
         position: 'center',
         icon: 'error',
@@ -175,9 +187,8 @@ const Team = () => {
       setShowModal(false)
     }
 
-    let employeService = new EmployeService();
-    employeService.save(employe).then(res => {
-      setEmploye({})
+    EmployeeService.save(employee).then(res => {
+      setEmployee({})
       setShowModal(false);
       setSaveSucces(!saveSucces);
     });
@@ -210,23 +221,22 @@ const Team = () => {
   }
 
   const getInfo = (id) => {
-    let employeService = new EmployeService();
-    employeService.getInfo(id).then(data => setEmploye(data))
+    EmployeeService.getInfo(id).then(data => setEmployee(data))
   }
 
-  const deleteEmployeQuestion = () =>{
+  const deleteEmployeeQuestion = () =>{
     Swal.fire({
       title: '¿Estas seguro de eliminar este registro?',
       text: "No podras revertir esta accion",
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: 'rgb(83, 75, 240)',
-      cancelButtonColor: '#d33',
+      cancelButtonColor: 'rgb(83, 75, 240)',
+      confirmButtonColor: '#d33',
       confirmButtonText: 'Si, eliminar',
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        deleteEmpleado(employe?.id)
+        deleteEmployee(employee?.id)
         Swal.fire(
           'Eliminado!',
           'El registro ha sido eliminado',
@@ -236,9 +246,10 @@ const Team = () => {
     })
   }
 
-  const deleteEmpleado = (id) => {
-    let employeService = new EmployeService();
-    employeService.delete(id).then(() => employeService.getAll().then(res => setEmployes(res)))
+  const deleteEmployee = async (id) => {
+    await EmployeeService.delete(id);
+    const res = await EmployeeService.getAll();
+    setEmployes(res);
   }
 
   const exportExcel = () => {
@@ -312,47 +323,33 @@ const Team = () => {
           },
         }}
       >
-        <DataGrid rows={employes} /* checkboxSelection */
-          selection={selectedEmpleado} onSelectionModelChange={e => getInfo(e)}
-          dataKey="id" columns={columns} localeText={{
-            noRowsLabel: "No se ha encontrado datos.",
-            noResultsOverlayLabel: "No se ha encontrado ningún resultado",
-            toolbarColumns: "Columnas",
-            toolbarColumnsLabel: "Seleccionar columnas",
-            toolbarFilters: "Filtros",
-            toolbarExport: "Exportar",
-            collapseDetailPanel: "test",
-            toolbarExport: 'Exportar',
-            toolbarExportLabel: 'Exportar',
-            toolbarExportCSV: 'Descargar como CSV',
-            toolbarExportPrint: 'Imprimir',
-            toolbarExportExcel: 'Descargar como Excel',
-          }} components={{ Toolbar: GridToolbar }} />
-        <Dialog header="Empleados" visible={showModal} style={{ width: '50vw' }} footer={renderFooter()} onHide={() => setShowModal(false)} selectedEmpleado>
-          <form id="empleado-form">
+        <DataGrid rows={employes} /* checkboxSelection  */
+          selection={selectedEmployee} onSelectionModelChange={e => getInfo(e)}
+          dataKey="id" columns={columns} localeText={Translate} 
+          components={{ Toolbar: GridToolbar }} />
+        <Dialog header="Empleados" visible={showModal} style={{ width: '45vw' }} footer={renderFooter()} onHide={setShowModal} selectedEmpleado>
+          <form id="empleado-form" >
             <div className="formgrid grid">
               <div className="field col">
                 <span className="p-float-label">
-                  <InputText name="nombre" value={employe?.first_name} onChange={({ target }) => setEmploye({ ...employe, ['first_name']: target.value })} style={{ width: '400px' }} />
+                  <InputText name="nombre" value={employee?.first_name} onChange={({ target }) => setEmployee({ ...employee, ['first_name']: target.value })} style={{ width: '400px' }} />
                   <label htmlFor="fist_name">Nombre</label>
                 </span>
               </div>
               <div className="field col">
-                <span className="p-float-label" >
-                  <InputText name="apellido" value={employe?.last_name} onChange={({ target }) => setEmploye({ ...employe, ['last_name']: target.value })} style={{ width: '400px' }} />
+                <span className="p-float-label " >
+                  <InputText name="apellido" value={employee?.last_name} onChange={({ target }) => setEmployee({ ...employee, ['last_name']: target.value })} style={{ width: '400px' }} />
                   <label htmlFor="last_name">Apellido</label>
                 </span>
               </div>
-            </div>
-            <div className="formgrid grid">
               <div className="field col">
-                <Dropdown name="empresa" value={employe?.company} options={nCompany} onChange={({ target }) => setEmploye({ ...employe, ['company']: target.value })} placeholder="Selecciona una empresa" style={{ width: "400px" }} />
+                <Dropdown name="empresa" value={employee?.company} options={nCompany} onChange={({ target }) => setEmployee({ ...employee, ['company']: target.value })} placeholder="Selecciona una empresa" style={{ width: "400px" }} />
               </div>
               <div className="field col">
-                <Dropdown name="cargo" value={employe?.position} options={nPosition} onChange={({ target }) => setEmploye({ ...employe, ['position']: target.value })} placeholder="Selecciona un cargo" style={{ width: "400px" }} />
+                <Dropdown name="cargo" value={employee?.position} options={nPosition} onChange={({ target }) => setEmployee({ ...employee, ['position']: target.value })} placeholder="Selecciona un cargo" style={{ width: "400px" }} />
               </div>
               <div className="field col">
-                <Dropdown name="horario" value={employe?.schedule_id} options={horary} onChange={({ target }) => setEmploye({ ...employe, ['schedule_id']: target.value })} placeholder="Selecciona un horario" style={{ width: "400px" }} />
+                <Dropdown name="horario" value={employee?.schedule_id} options={horary} onChange={({ target }) => setEmployee({ ...employee, ['schedule_id']: target.value })} placeholder="Selecciona un horario" style={{ width: "400px" }} />
               </div> 
             </div>
           </form>

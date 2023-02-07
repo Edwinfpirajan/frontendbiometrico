@@ -48,12 +48,14 @@
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
     "react-sweetalert2": "^0.5.2",
+    "react-toastify": "^9.1.1",
     "react-transition-group": "^4.4.5",
     "react-webcam": "^7.0.1",
     "web-vitals": "^2.1.4",
     "xlsx": "^0.18.5",
     "yup": "^0.32.11"
   },
+  "homepage":"http://distriramirez.com.co",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",

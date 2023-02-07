@@ -1,9 +1,40 @@
 
-.container{
+.container-attendence{
+  width: 100vw;
+  height: 100vh;
+  background-image: url(../../img/toolsImg/background-01.jpg);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
     display: flex;
     align-items: center;
     justify-content: center;
 }
+
+.container-attendence a h2{
+  font-weight: 100;
+  font-size: 1.2em;
+}
+
+.container-attendence a:visited{
+  color: rgb(175, 175, 175);                 
+}
+
+.btn-admin-login h2{
+  position: absolute;
+  top: 20px;
+  right: 70px;
+  text-decoration: none;
+  color: rgb(175, 175, 175);
+  transition: .7s;
+}
+
+.btn-admin-login h2:hover{
+  color: rgb(134, 134, 134);
+  transition: .7s;
+  text-decoration: underline;
+}
+
 
 
 .contenido{
@@ -14,10 +45,16 @@
     /* width: 500px; */
     /* border: 1px solid red; */
     border-radius: 20px;
-    -webkit-box-shadow: 10px 10px 19px 1px rgba(0,0,0,1);
-    -moz-box-shadow: 10px 10px 19px 1px rgba(0,0,0,1);
-    box-shadow: 10px 10px 19px 1px rgba(0,0,0,1);
+    -webkit-box-shadow: 10px 10px 19px 1px rgb(31, 31, 31);
+    -moz-box-shadow: 10px 10px 19px 1px rgb(31, 31, 31);
+    box-shadow: 10px 10px 19px 1px rgb(31, 31, 31);
 }
+
+
+
+
+
+
 
 .content1, .content2{
     /* border: 1px solid blue; */
